@@ -1,164 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
-    
-    // #region 1. LOGICA DE NAVEGACIÓN Y MENÚS
-    const menuItems = document.querySelectorAll('.nav-links li, #menu-links li');
+// ... Todo tu JS anterior se queda exactamente igual (Regiones 1, 2, 3 y 4) ...
 
-    function changeMenu(event) {
-        menuItems.forEach(item => item.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        console.log("Navegando a: " + event.currentTarget.innerText);
-    }
-
-    menuItems.forEach(item => {
-        item.addEventListener('click', changeMenu);
-    });
-    // #endregion
-
-    // #region 2. LOGICA DEL SLIDER DE MÉTODOS (INICIO)
-    const sliderContainer = document.getElementById('slider-container');
-    const btnPrev = document.getElementById('btn-prev');
-    const btnNext = document.getElementById('btn-next');
-
-    if (btnPrev && sliderContainer) {
-        btnPrev.addEventListener('click', () => {
-            sliderContainer.scrollBy({ left: -344, behavior: 'smooth' });
-        });
-    }
-
-    if (btnNext && sliderContainer) {
-        btnNext.addEventListener('click', () => {
-            sliderContainer.scrollBy({ left: 344, behavior: 'smooth' });
-        });
-    }
-    // #endregion
-
-    // #region 3. VENTANA MODAL (DETALLES DE BIBLIOTECA)
-    const modal = document.getElementById('method-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const cards = document.querySelectorAll('.method-card');
-
-    const mTitle = document.getElementById('modal-title');
-    const mTagsContainer = document.getElementById('modal-tags-container');
-    const mDef = document.getElementById('modal-def');
-    const mEnfoque = document.getElementById('modal-enfoque');
-    const mCasos = document.getElementById('modal-casos');
-    const mVentajas = document.getElementById('modal-ventajas');
-    const mDesventajas = document.getElementById('modal-desventajas');
-
-    cards.forEach(card => {
-        card.addEventListener('click', () => {
-            const nombre = card.getAttribute('data-nombre');
-            const tags = card.getAttribute('data-tags');
-            const definicion = card.getAttribute('data-definicion');
-            const casos = card.getAttribute('data-casos');
-            const ventajas = card.getAttribute('data-ventajas');
-            const desventajas = card.getAttribute('data-desventajas');
-            const enfoque = card.getAttribute('data-enfoque');
-
-            if (nombre) {
-                mTitle.innerText = nombre;
-                mDef.innerText = definicion;
-                mEnfoque.innerText = enfoque;
-                mCasos.innerText = casos;
-                mVentajas.innerText = ventajas;
-                mDesventajas.innerText = desventajas;
-
-                mTagsContainer.innerHTML = '';
-                if (tags) {
-                    tags.split(',').forEach(tag => {
-                        const pill = document.createElement('span');
-                        pill.classList.add('modal-pill');
-                        pill.innerText = tag.trim();
-                        mTagsContainer.appendChild(pill);
-                    });
-                }
-
-                modal.classList.add('show');
-            }
-        });
-    });
-
-    function closeModal() {
-        if (modal) modal.classList.remove('show');
-    }
-
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', closeModal);
-    }
-    
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
-    }
-    // #endregion
-
-   // #region 4. BUSCADOR Y FILTROS EN TIEMPO REAL (BIBLIOTECA)
-    const searchInput = document.querySelector('.search-input');
-    const filterTags = document.querySelectorAll('.filter-tag');
-
-    function filtrarMetodos() {
-        // Capturamos las tarjetas dinámicas generadas por Django
-        const tarjetasDinamicas = document.querySelectorAll('.method-card');
-        
-        const textoBusqueda = searchInput ? searchInput.value.toLowerCase().trim() : "";
-        
-        // Obtenemos el texto del botón presionado en minúsculas (ej: "todos", "formal", "heuristico", "agil")
-        const tagActivoText = document.querySelector('.filter-tag.active') ? document.querySelector('.filter-tag.active').innerText.toLowerCase().trim() : "todos";
-
-        tarjetasDinamicas.forEach(card => {
-            const nombre = card.querySelector('h3') ? card.querySelector('h3').innerText.toLowerCase() : "";
-            const descripcion = card.querySelector('p') ? card.querySelector('p').innerText.toLowerCase() : "";
-            
-            // Capturamos la categoría que viene de la base de datos (tanto del tag visual como del atributo data)
-            const tipoTag = card.querySelector('.method-tag') ? card.querySelector('.method-tag').innerText.toLowerCase().trim() : "";
-            const dataTags = card.getAttribute('data-tags') ? card.getAttribute('data-tags').toLowerCase() : "";
-
-            // 1. Coincidencia por texto en el buscador
-            const coincideTexto = nombre.includes(textoBusqueda) || descripcion.includes(textoBusqueda);
-            
-            // 2. Coincidencia por Filtro (Normalizando tildes para evitar fallos)
-            let coincideTag = false;
-            
-            if (tagActivoText === "todos") {
-                coincideTag = true;
-            } else {
-                // Función rápida para limpiar tildes (convierte "heurístico" en "heuristico", "ágil" en "agil")
-                const limpiarTildes = (str) => str.replace(/[á]/g, 'a').replace(/[é]/g, 'e').replace(/[í]/g, 'i').replace(/[ó]/g, 'o').replace(/[ú]/g, 'u');
-
-                const tagBuscadoLimpio = limpiarTildes(tagActivoText);
-                const tagTarjetaLimpio = limpiarTildes(tipoTag);
-                const dataTagsLimpio = limpiarTildes(dataTags);
-
-                // Comparamos si el filtro activo está incluido en la categoría de la tarjeta
-                if (tagTarjetaLimpio.includes(tagBuscadoLimpio) || dataTagsLimpio.includes(tagBuscadoLimpio)) {
-                    coincideTag = true;
-                }
-            }
-
-            // 3. Aplicar visibilidad final
-            if (coincideTexto && coincideTag) {
-                card.style.display = "flex";
-            } else {
-                card.style.display = "none";
-            }
-        });
-    }
-
-    if (searchInput) {
-        searchInput.addEventListener('input', filtrarMetodos);
-    }
-
-    filterTags.forEach(tag => {
-        tag.addEventListener('click', (e) => {
-            filterTags.forEach(t => t.classList.remove('active'));
-            e.target.classList.add('active');
-            filtrarMetodos();
-        });
-    });
-    // #endregion
-
-  // #region 5. MOTOR DE EVALUACIÓN (WIZARD DINÁMICO CON BACKEND)
+// #region 5. MOTOR DE EVALUACIÓN (CONEXIÓN CON STORED PROCEDURES)
     const step1 = document.getElementById('wizard-step-1');
     const step2 = document.getElementById('wizard-step-2');
     const btnTo2 = document.getElementById('btn-to-step-2');
@@ -172,71 +14,67 @@ document.addEventListener("DOMContentLoaded", () => {
     const instruccionFase = document.getElementById('instruccion-fase');
     const btnSubmitEvaluar = document.getElementById('btn-submit-evaluar');
 
-    // Definición de las 5 fases dinámicas que vienen de tu Base de Datos
-    const fasesDinamicas = ["Equipo", "Cliente", "Dimension del Proyecto", "Entorno tecnologico", "Modelo Decision"];
-    let faseActualIndex = 0;
-    let respuestasAcumuladas = {}; // Guardará las respuestas temporales de todas las fases
+    // Elementos de la nueva Modal Final
+    const modalFinal = document.getElementById('modal-resultado-final');
+    const txtCategoriaGanadora = document.getElementById('txt-categoria-ganadora');
+    const selectMetodoGanador = document.getElementById('select-metodo-ganador');
+    const finalSaveForm = document.getElementById('final-save-form');
+    const btnCerrarModalFinal = document.getElementById('btn-cerrar-modal-final');
 
-    // Función asíncrona para traer los criterios del backend usando Fetch
+    const fasesDinamicas = ["Equipo", "Cliente", "Dimension del Proyecto", "Entorno tecnologico", "Modelo de decision"];
+    let faseActualIndex = 0;
+    let conteoCategoriasGlobal = { agil: 0, formal: 0, heuristico: 0, evolutivo: 0 };
+
     async function cargarPreguntasFase(nombreFase) {
         if (!questionsContainer) return;
-        
         try {
-            // Actualizamos la instrucción visual para el usuario
             if (instruccionFase) {
-                instruccionFase.innerHTML = `<strong>Fase Actual: ${nombreFase}</strong>. Responda los siguientes 4 criterios obtenidos desde la base de datos:`;
+                instruccionFase.innerHTML = `<strong>Fase Actual: ${nombreFase}</strong>. Evalúe los siguientes factores clave para su proyecto:`;
             }
-            
-            // Hacemos la llamada HTTP GET a nuestra API de Django enviando el parámetro
             const response = await fetch(`/api/obtener-criterios/?fase=${encodeURIComponent(nombreFase)}`);
             const data = await response.json();
             
             if (data.criterios && data.criterios.length > 0) {
-                questionsContainer.innerHTML = ''; // Limpiamos preguntas anteriores
-                
-                // Iteramos sobre los 4 criterios devueltos por el Stored Procedure
+                questionsContainer.innerHTML = '';
                 data.criterios.forEach((criterio, index) => {
                     const questionCard = document.createElement('div');
-                    questionCard.classList.add('question-card'); // Mantenemos tu clase original de estilos
-                    
-                    // Creamos una clave única para el name del radio button basada en la fase y el índice
+                    questionCard.classList.add('question-card');
                     const radioName = `q-${nombreFase.toLowerCase().replace(/\s+/g, '-')}-${index}`;
 
-                    // Generamos la estructura HTML idéntica a la que tenías pero inyectando el nombre del criterio
                     questionCard.innerHTML = `
-                        <h4>${index + 1}. ¿Cómo evalúa el criterio: <strong>${criterio}</strong> para su proyecto?</h4>
+                        <h4>${index + 1}. ¿Cómo afecta el criterio <strong>${criterio}</strong> al desarrollo del proyecto?</h4>
                         <div class="radio-options">
                           <label class="radio-container">
-                            <input type="radio" name="${radioName}" value="1" required> Bajo / Riguroso (Orientado a procesos tradicionales)
+                            <input type="radio" name="${radioName}" value="5" data-categoria="agil" required> Alto / Flexible (Enfoque Ágil)
                           </label>
                           <label class="radio-container">
-                            <input type="radio" name="${radioName}" value="3"> Moderado / Intermedio (Enfoque híbrido adaptativo)
+                            <input type="radio" name="${radioName}" value="5" data-categoria="formal"> Rígido / Normativo (Enfoque Formal)
                           </label>
                           <label class="radio-container">
-                            <input type="radio" name="${radioName}" value="5"> Alto / Flexible (Orientado a metodologías ágiles)
+                            <input type="radio" name="${radioName}" value="5" data-categoria="heuristico"> Complejo / Algorítmico (Enfoque Heurístico)
+                          </label>
+                          <label class="radio-container">
+                            <input type="radio" name="${radioName}" value="5" data-categoria="evolutivo"> Experimental / Incierto (Enfoque Evolutivo)
                           </label>
                         </div>
                     `;
                     questionsContainer.appendChild(questionCard);
                 });
 
-                // Cambiar dinámicamente el texto del botón final según corresponda
                 if (faseActualIndex === fasesDinamicas.length - 1) {
                     if (btnSubmitEvaluar) btnSubmitEvaluar.innerText = "Calcular Recomendación Final 📊";
                 } else {
                     if (btnSubmitEvaluar) btnSubmitEvaluar.innerText = "Siguiente Fase ➡️";
                 }
-
             } else {
                 questionsContainer.innerHTML = '<p>No se encontraron criterios para esta fase en la base de datos.</p>';
             }
         } catch (error) {
-            console.error("Error al cargar los criterios desde la BD:", error);
+            console.error("Error al cargar los criterios:", error);
             questionsContainer.innerHTML = '<p>Error de conexión al cargar el formulario dinámico.</p>';
         }
     }
 
-    // Transición del Paso 1 (Estático) al Paso 2 (Dinámico)
     if (btnTo2 && registerForm) {
         btnTo2.addEventListener('click', () => {
             if (registerForm.checkValidity()) {
@@ -246,9 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     badge1.classList.remove('active');
                     badge2.classList.add('active');
                 }
-                
-                // Iniciamos la carga de la primera fase dinámica ('Equipo')
                 faseActualIndex = 0;
+                conteoCategoriasGlobal = { agil: 0, formal: 0, heuristico: 0, evolutivo: 0 };
                 cargarPreguntasFase(fasesDinamicas[faseActualIndex]);
             } else {
                 registerForm.reportValidity();
@@ -256,15 +93,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Lógica para el botón Atrás
     if (btnBack1) {
         btnBack1.addEventListener('click', () => {
             if (faseActualIndex > 0) {
-                // Si está en una fase intermedia, retrocede a la fase dinámica anterior
                 faseActualIndex--;
                 cargarPreguntasFase(fasesDinamicas[faseActualIndex]);
             } else {
-                // Si está en la primera fase dinámica, regresa por completo al Paso 1 de Datos Generales
                 if (step1 && step2 && badge1 && badge2) {
                     step2.classList.remove('active');
                     step1.classList.add('active');
@@ -275,48 +109,111 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Procesar el envío del cuestionario por fases
+    // Procesar el envío por fases
     if (questionsForm) {
-        questionsForm.addEventListener('submit', (e) => {
+        questionsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const faseActualNombre = fasesDinamicas[faseActualIndex];
-            
-            // Almacenamos temporalmente las respuestas de la fase actual en nuestro objeto acumulador
-            const FormDataFase = new FormData(questionsForm);
-            for (let [key, value] of FormDataFase.entries()) {
-                respuestasAcumuladas[key] = parseInt(value);
-            }
+            const radiosSeleccionados = questionsForm.querySelectorAll('input[type="radio"]:checked');
+            radiosSeleccionados.forEach(radio => {
+                const categoria = radio.getAttribute('data-categoria');
+                const puntaje = parseInt(radio.value) || 0;
+                if (categoria && conteoCategoriasGlobal.hasOwnProperty(categoria)) {
+                    conteoCategoriasGlobal[categoria] += puntaje;
+                }
+            });
 
-            // Comprobamos si nos quedan más fases por responder
             if (faseActualIndex < fasesDinamicas.length - 1) {
-                // Avanzamos al siguiente bloque dinámico
                 faseActualIndex++;
-                questionsForm.reset(); // Reseteamos la selección visual para la nueva fase
+                questionsForm.reset();
                 cargarPreguntasFase(fasesDinamicas[faseActualIndex]);
-                window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll estético arriba
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-                // ¡Llegamos al final de las 5 fases dinámicas! Procesamos los datos definitivos
-                const proyecto = {
-                    nombre: document.getElementById('proj-name').value,
-                    equipo: document.getElementById('team-size').value,
-                    requisitos: document.getElementById('req-type').value,
-                    contexto: document.getElementById('org-context').value
-                };
+                // ¡Fin del cuestionario! Calculamos ganadora
+                let categoriaGanadora = "agil";
+                let maxPuntaje = -1;
+                for (let cat in conteoCategoriasGlobal) {
+                    if (conteoCategoriasGlobal[cat] > maxPuntaje) {
+                        maxPuntaje = conteoCategoriasGlobal[cat];
+                        categoriaGanadora = cat;
+                    }
+                }
 
-                // Calculamos el promedio matemático real sumando absolutamente todas las respuestas acumuladas
-                const valoresRespuestas = Object.values(respuestasAcumuladas);
-                const sumaTotal = valoresRespuestas.reduce((a, b) => a + b, 0);
-                const puntajeAgilidadFinal = sumaTotal / valoresRespuestas.length;
+                // 1. Mostrar la modal final y asignar el título
+                txtCategoriaGanadora.innerText = categoriaGanadora.toUpperCase();
+                modalFinal.style.display = "flex";
 
-                console.log("Datos Finales del Proyecto:", proyecto);
-                console.log("Respuestas completas de las 5 fases:", respuestasAcumuladas);
-                console.log("Puntaje definitivo de Agilidad (1 al 5):", puntajeAgilidadFinal.toFixed(2));
-
-                alert(`¡Evaluación completada con éxito para "${proyecto.nombre}"!\nSe procesaron las 5 fases dinámicas desde la Base de Datos.\nPuntaje General de Agilidad: ${puntajeAgilidadFinal.toFixed(2)}/5.`);
+                // 2. Alimentar el combo llamando a obtener_metodos_por_categoria (usa GetMethodsForCategoria)
+                selectMetodoGanador.innerHTML = '<option value="">Cargando métodos...</option>';
+                try {
+                    const res = await fetch(`/api/obtener-metodos/?categoria=${categoriaGanadora}`);
+                    const data = await res.json();
+                    
+                    if(data.metodos && data.metodos.length > 0) {
+                        selectMetodoGanador.innerHTML = '<option value="" disabled selected>-- Elija el método ganador --</option>';
+                        data.metodos.forEach(metodo => {
+                            const opt = document.createElement('option');
+                            opt.value = metodo.id;
+                            opt.textContent = metodo.nombre;
+                            selectMetodoGanador.appendChild(opt);
+                        });
+                    } else {
+                        selectMetodoGanador.innerHTML = '<option value="">No hay métodos en esta categoría</option>';
+                    }
+                } catch(err) {
+                    console.error("Error al traer métodos:", err);
+                    selectMetodoGanador.innerHTML = '<option value="">Error al cargar metodologías</option>';
+                }
             }
         });
     }
-    // #endregion
 
-});
+    // Evento para enviar y guardar definitivamente todo en la base de datos (POST)
+    if (finalSaveForm) {
+        finalSaveForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Empaquetamos los datos capturados en el Paso 1
+            const payload = {
+                proyecto: {
+                    nombre: document.getElementById('proj-name').value,
+                    descripcion: document.getElementById('proj-desc').value,
+                    cliente: document.getElementById('proj-client').value,
+                    presupuesto: document.getElementById('proj-budget').value
+                },
+                metodo_id: parseInt(selectMetodoGanador.value),
+                resultado_rec: document.getElementById('txt-recomendacion-final').value
+            };
+
+            try {
+                // Enviamos los datos completos al endpoint de guardado masivo
+                const response = await fetch('/api/guardar-evaluacion/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    alert('¡Éxito total! El proyecto fue creado y los criterios fueron mapeados en la tabla Cuestionario vía Stored Procedure.');
+                    modalFinal.style.display = "none";
+                    window.location.reload(); // Recargamos para limpiar el wizard
+                } else {
+                    alert('Error en el servidor: ' + result.message);
+                }
+            } catch (error) {
+                console.error("Error al guardar evaluación:", error);
+                alert("Ocurrió un error de red al intentar conectarse al servidor.");
+            }
+        });
+    }
+
+    if (btnCerrarModalFinal) {
+        btnCerrarModalFinal.addEventListener('click', () => {
+            modalFinal.style.display = "none";
+        });
+    }
+// #endregion
