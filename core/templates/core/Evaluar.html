@@ -65,59 +65,17 @@
 
           <div class="wizard-step-content" id="wizard-step-2">
             <div class="wizard-instruction">
-              <p>Responda los siguientes factores clave del sílabo para determinar el grado de agilidad o rigurosidad tradicional necesaria:</p>
+              <p id="instruccion-fase">Responda los siguientes factores clave para determinar el grado de agilidad o rigurosidad tradicional necesaria:</p>
             </div>
 
             <form id="criteria-questions-form" class="wizard-form">
-                
-              <div class="question-card">
-                <h4>1. ¿Con qué frecuencia se esperan cambios en los requisitos del sistema?</h4>
-                <div class="radio-options">
-                  <label class="radio-container">
-                    <input type="radio" name="q-volatility" value="1" required> Casi nunca. Los requisitos normativos o el diseño están fijos.
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-volatility" value="3"> Moderada de forma mensual o por fases programadas.
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-volatility" value="5"> Muy alta. Evolucionan semana a semana junto con el mercado.
-                  </label>
+              
+              <div id="dynamic-questions-container">
                 </div>
-              </div>
-
-              <div class="question-card">
-                <h4>2. ¿Cuál es el impacto financiero o humano ante una falla crítica en producción?</h4>
-                <div class="radio-options">
-                  <label class="radio-container">
-                    <input type="radio" name="q-criticality" value="5" required> Bajo (Pérdidas menores de comodidad o re-trabajo simple).
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-criticality" value="3"> Alto (Pérdidas financieras significativas o problemas legales comerciales).
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-criticality" value="1"> Vital / Extremo (Pérdidas de vidas humanas, quiebras o fallas de infraestructura básica).
-                  </label>
-                </div>
-              </div>
-
-              <div class="question-card">
-                <h4>3. ¿Dispone de un cliente o Product Owner para revisiones e interacciones constantes?</h4>
-                <div class="radio-options">
-                  <label class="radio-container">
-                    <input type="radio" name="q-delivery" value="1" required> No, solo al inicio y durante la firma de entregables finales.
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-delivery" value="3"> Ocasionalmente (Reuniones quincenales o mensuales de control).
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-delivery" value="5"> Totalmente disponible para interactuar y validar el progreso diariamente.
-                  </label>
-                </div>
-              </div>
 
               <div class="wizard-actions">
                 <button type="button" class="btn secondary-btn" id="btn-back-to-1">⬅️ Atrás</button>
-                <button type="submit" class="btn success-btn">Calcular Recomendación 📊</button>
+                <button type="submit" class="btn success-btn" id="btn-submit-evaluar">Calcular Recomendación 📊</button>
               </div>
             </form>
           </div>

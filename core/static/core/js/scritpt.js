@@ -93,32 +93,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // #endregion
 
-    // #region 4. BUSCADOR Y FILTROS EN TIEMPO REAL (BIBLIOTECA)
+   // #region 4. BUSCADOR Y FILTROS EN TIEMPO REAL (BIBLIOTECA)
     const searchInput = document.querySelector('.search-input');
     const filterTags = document.querySelectorAll('.filter-tag');
 
     function filtrarMetodos() {
-        const textoBusqueda = searchInput ? searchInput.value.toLowerCase() : "";
-        const tagActivo = document.querySelector('.filter-tag.active') ? document.querySelector('.filter-tag.active').innerText.toLowerCase() : "todos";
+        // Capturamos las tarjetas dinámicas generadas por Django
+        const tarjetasDinamicas = document.querySelectorAll('.method-card');
+        
+        const textoBusqueda = searchInput ? searchInput.value.toLowerCase().trim() : "";
+        
+        // Obtenemos el texto del botón presionado en minúsculas (ej: "todos", "formal", "heuristico", "agil")
+        const tagActivoText = document.querySelector('.filter-tag.active') ? document.querySelector('.filter-tag.active').innerText.toLowerCase().trim() : "todos";
 
-        cards.forEach(card => {
+        tarjetasDinamicas.forEach(card => {
             const nombre = card.querySelector('h3') ? card.querySelector('h3').innerText.toLowerCase() : "";
             const descripcion = card.querySelector('p') ? card.querySelector('p').innerText.toLowerCase() : "";
-            const tipoTag = card.querySelector('.method-tag') ? card.querySelector('.method-tag').innerText.toLowerCase() : "";
+            
+            // Capturamos la categoría que viene de la base de datos (tanto del tag visual como del atributo data)
+            const tipoTag = card.querySelector('.method-tag') ? card.querySelector('.method-tag').innerText.toLowerCase().trim() : "";
+            const dataTags = card.getAttribute('data-tags') ? card.getAttribute('data-tags').toLowerCase() : "";
 
+            // 1. Coincidencia por texto en el buscador
             const coincideTexto = nombre.includes(textoBusqueda) || descripcion.includes(textoBusqueda);
             
+            // 2. Coincidencia por Filtro (Normalizando tildes para evitar fallos)
             let coincideTag = false;
-            if (tagActivo === "todos") {
+            
+            if (tagActivoText === "todos") {
                 coincideTag = true;
-            } else if (tagActivo === "ágiles" && tipoTag === "ágil") {
-                coincideTag = true;
-            } else if (tagActivo === "tradicionales" && tipoTag === "tradicional") {
-                coincideTag = true;
-            } else if (tagActivo === "estructurados" && tipoTag === "estructurado") {
-                coincideTag = true;
+            } else {
+                // Función rápida para limpiar tildes (convierte "heurístico" en "heuristico", "ágil" en "agil")
+                const limpiarTildes = (str) => str.replace(/[á]/g, 'a').replace(/[é]/g, 'e').replace(/[í]/g, 'i').replace(/[ó]/g, 'o').replace(/[ú]/g, 'u');
+
+                const tagBuscadoLimpio = limpiarTildes(tagActivoText);
+                const tagTarjetaLimpio = limpiarTildes(tipoTag);
+                const dataTagsLimpio = limpiarTildes(dataTags);
+
+                // Comparamos si el filtro activo está incluido en la categoría de la tarjeta
+                if (tagTarjetaLimpio.includes(tagBuscadoLimpio) || dataTagsLimpio.includes(tagBuscadoLimpio)) {
+                    coincideTag = true;
+                }
             }
 
+            // 3. Aplicar visibilidad final
             if (coincideTexto && coincideTag) {
                 card.style.display = "flex";
             } else {
@@ -140,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // #endregion
 
-    // #region 5. MOTOR DE EVALUACIÓN (WIZARD)
+  // #region 5. MOTOR DE EVALUACIÓN (WIZARD DINÁMICO CON BACKEND)
     const step1 = document.getElementById('wizard-step-1');
     const step2 = document.getElementById('wizard-step-2');
     const btnTo2 = document.getElementById('btn-to-step-2');
@@ -150,64 +168,153 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const registerForm = document.getElementById('project-register-form');
     const questionsForm = document.getElementById('criteria-questions-form');
+    const questionsContainer = document.getElementById('dynamic-questions-container');
+    const instruccionFase = document.getElementById('instruccion-fase');
+    const btnSubmitEvaluar = document.getElementById('btn-submit-evaluar');
 
-    // Transición del Paso 1 al Paso 2 con validación nativa
+    // Definición de las 5 fases dinámicas que vienen de tu Base de Datos
+    const fasesDinamicas = ["Equipo", "Cliente", "Dimension del Proyecto", "Entorno tecnologico", "Modelo Decision"];
+    let faseActualIndex = 0;
+    let respuestasAcumuladas = {}; // Guardará las respuestas temporales de todas las fases
+
+    // Función asíncrona para traer los criterios del backend usando Fetch
+    async function cargarPreguntasFase(nombreFase) {
+        if (!questionsContainer) return;
+        
+        try {
+            // Actualizamos la instrucción visual para el usuario
+            if (instruccionFase) {
+                instruccionFase.innerHTML = `<strong>Fase Actual: ${nombreFase}</strong>. Responda los siguientes 4 criterios obtenidos desde la base de datos:`;
+            }
+            
+            // Hacemos la llamada HTTP GET a nuestra API de Django enviando el parámetro
+            const response = await fetch(`/api/obtener-criterios/?fase=${encodeURIComponent(nombreFase)}`);
+            const data = await response.json();
+            
+            if (data.criterios && data.criterios.length > 0) {
+                questionsContainer.innerHTML = ''; // Limpiamos preguntas anteriores
+                
+                // Iteramos sobre los 4 criterios devueltos por el Stored Procedure
+                data.criterios.forEach((criterio, index) => {
+                    const questionCard = document.createElement('div');
+                    questionCard.classList.add('question-card'); // Mantenemos tu clase original de estilos
+                    
+                    // Creamos una clave única para el name del radio button basada en la fase y el índice
+                    const radioName = `q-${nombreFase.toLowerCase().replace(/\s+/g, '-')}-${index}`;
+
+                    // Generamos la estructura HTML idéntica a la que tenías pero inyectando el nombre del criterio
+                    questionCard.innerHTML = `
+                        <h4>${index + 1}. ¿Cómo evalúa el criterio: <strong>${criterio}</strong> para su proyecto?</h4>
+                        <div class="radio-options">
+                          <label class="radio-container">
+                            <input type="radio" name="${radioName}" value="1" required> Bajo / Riguroso (Orientado a procesos tradicionales)
+                          </label>
+                          <label class="radio-container">
+                            <input type="radio" name="${radioName}" value="3"> Moderado / Intermedio (Enfoque híbrido adaptativo)
+                          </label>
+                          <label class="radio-container">
+                            <input type="radio" name="${radioName}" value="5"> Alto / Flexible (Orientado a metodologías ágiles)
+                          </label>
+                        </div>
+                    `;
+                    questionsContainer.appendChild(questionCard);
+                });
+
+                // Cambiar dinámicamente el texto del botón final según corresponda
+                if (faseActualIndex === fasesDinamicas.length - 1) {
+                    if (btnSubmitEvaluar) btnSubmitEvaluar.innerText = "Calcular Recomendación Final 📊";
+                } else {
+                    if (btnSubmitEvaluar) btnSubmitEvaluar.innerText = "Siguiente Fase ➡️";
+                }
+
+            } else {
+                questionsContainer.innerHTML = '<p>No se encontraron criterios para esta fase en la base de datos.</p>';
+            }
+        } catch (error) {
+            console.error("Error al cargar los criterios desde la BD:", error);
+            questionsContainer.innerHTML = '<p>Error de conexión al cargar el formulario dinámico.</p>';
+        }
+    }
+
+    // Transición del Paso 1 (Estático) al Paso 2 (Dinámico)
     if (btnTo2 && registerForm) {
         btnTo2.addEventListener('click', () => {
-            // Validar que los campos obligatorios del registro estén completos antes de pasar
             if (registerForm.checkValidity()) {
                 step1.classList.remove('active');
                 step2.classList.add('active');
-                if(badge1 && badge2) {
+                if (badge1 && badge2) {
                     badge1.classList.remove('active');
                     badge2.classList.add('active');
                 }
+                
+                // Iniciamos la carga de la primera fase dinámica ('Equipo')
+                faseActualIndex = 0;
+                cargarPreguntasFase(fasesDinamicas[faseActualIndex]);
             } else {
-                // Si falta algo, dispara las alertas nativas del navegador
                 registerForm.reportValidity();
             }
         });
     }
 
-    // Regresar al Paso 1
+    // Lógica para el botón Atrás
     if (btnBack1) {
         btnBack1.addEventListener('click', () => {
-            if(step1 && step2 && badge1 && badge2) {
-                step2.classList.remove('active');
-                step1.classList.add('active');
-                badge2.classList.remove('active');
-                badge1.classList.add('active');
+            if (faseActualIndex > 0) {
+                // Si está en una fase intermedia, retrocede a la fase dinámica anterior
+                faseActualIndex--;
+                cargarPreguntasFase(fasesDinamicas[faseActualIndex]);
+            } else {
+                // Si está en la primera fase dinámica, regresa por completo al Paso 1 de Datos Generales
+                if (step1 && step2 && badge1 && badge2) {
+                    step2.classList.remove('active');
+                    step1.classList.add('active');
+                    badge2.classList.remove('active');
+                    badge1.classList.add('active');
+                }
             }
         });
     }
 
-    // Procesar envío del cuestionario (Cálculo preliminar)
+    // Procesar el envío del cuestionario por fases
     if (questionsForm) {
         questionsForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            // Captura de datos generales del Paso 1
-            const proyecto = {
-                nombre: document.getElementById('proj-name').value,
-                equipo: document.getElementById('team-size').value,
-                requisitos: document.getElementById('req-type').value,
-                contexto: document.getElementById('org-context').value
-            };
+            const faseActualNombre = fasesDinamicas[faseActualIndex];
+            
+            // Almacenamos temporalmente las respuestas de la fase actual en nuestro objeto acumulador
+            const FormDataFase = new FormData(questionsForm);
+            for (let [key, value] of FormDataFase.entries()) {
+                respuestasAcumuladas[key] = parseInt(value);
+            }
 
-            // Captura de respuestas del Paso 2
-            const rVolatilidad = parseInt(document.querySelector('input[name="q-volatility"]:checked').value);
-            const rCriticidad = parseInt(document.querySelector('input[name="q-criticality"]:checked').value);
-            const rInvolucramiento = parseInt(document.querySelector('input[name="q-delivery"]:checked').value);
+            // Comprobamos si nos quedan más fases por responder
+            if (faseActualIndex < fasesDinamicas.length - 1) {
+                // Avanzamos al siguiente bloque dinámico
+                faseActualIndex++;
+                questionsForm.reset(); // Reseteamos la selección visual para la nueva fase
+                cargarPreguntasFase(fasesDinamicas[faseActualIndex]);
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll estético arriba
+            } else {
+                // ¡Llegamos al final de las 5 fases dinámicas! Procesamos los datos definitivos
+                const proyecto = {
+                    nombre: document.getElementById('proj-name').value,
+                    equipo: document.getElementById('team-size').value,
+                    requisitos: document.getElementById('req-type').value,
+                    contexto: document.getElementById('org-context').value
+                };
 
-            // Algoritmo matemático base (Promedio de factores)
-            // Valores cercanos a 5 -> Agilidad alta (Scrum/XP)
-            // Valores cercanos a 1 -> Rigidez Estructurada/Tradicional (Cascada/SSA-SD)
-            const puntajeAgilidad = (rVolatilidad + rCriticidad + rInvolucramiento) / 3;
+                // Calculamos el promedio matemático real sumando absolutamente todas las respuestas acumuladas
+                const valoresRespuestas = Object.values(respuestasAcumuladas);
+                const sumaTotal = valoresRespuestas.reduce((a, b) => a + b, 0);
+                const puntajeAgilidadFinal = sumaTotal / valoresRespuestas.length;
 
-            console.log("Datos del Proyecto:", proyecto);
-            console.log("Puntaje obtenido de Agilidad (1 al 5):", puntajeAgilidad.toFixed(2));
+                console.log("Datos Finales del Proyecto:", proyecto);
+                console.log("Respuestas completas de las 5 fases:", respuestasAcumuladas);
+                console.log("Puntaje definitivo de Agilidad (1 al 5):", puntajeAgilidadFinal.toFixed(2));
 
-            alert(`¡Cálculo procesado con éxito para "${proyecto.nombre}"!\nPuntaje de Agilidad: ${puntajeAgilidad.toFixed(2)}/5.\nPronto añadiremos la pantalla con los gráficos de recomendación.`);
+                alert(`¡Evaluación completada con éxito para "${proyecto.nombre}"!\nSe procesaron las 5 fases dinámicas desde la Base de Datos.\nPuntaje General de Agilidad: ${puntajeAgilidadFinal.toFixed(2)}/5.`);
+            }
         });
     }
     // #endregion
