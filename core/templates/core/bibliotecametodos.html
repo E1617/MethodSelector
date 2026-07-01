@@ -9,80 +9,34 @@
       
     <div class="library-filters">
       <input type="text" placeholder="🔍 Buscar método (Scrum, XP, SSA/SD...)" class="search-input">
-      <div class="filter-tags">
-        <span class="filter-tag active">Todos</span>
-        <span class="filter-tag">Ágiles</span>
-        <span class="filter-tag">Tradicionales</span>
-        <span class="filter-tag">Estructurados</span>
-      </div>
     </div>
 
     <div class="library-grid">
         
-      <div class="method-card" data-nombre="SSA/SD" data-tags="Tradicional, Predictivo, Estructurado" data-definicion="Análisis y Diseño Estructurado de Sistemas. Método clásico enfocado en el flujo de datos y procesos lógicos." data-casos="Sistemas gubernamentales, software bancario central e infraestructura crítica." data-ventajas="Documentación exhaustiva y fases claramente definidas desde el inicio." data-desventajas="Inflexible ante cambios y detección tardía de errores de diseño." data-enfoque="Orientado a procesos lineales y flujos de datos estructurados.">
-        <span class="method-tag tradicional">Tradicional</span>
-        <h3>SSA/SD</h3>
-        <p>Análisis y Diseño Estructurado de Sistemas. Método clásico enfocado en el flujo de datos y procesos lógicos ideal para sistemas de alta estabilidad.</p>
-      </div>
-
-      <div class="method-card" data-nombre="JSP" data-tags="Estructurado, Jackson, Datos" data-definicion="Programación Estructurada de Jackson. Método que deriva la estructura del programa a partir de la estructura de sus datos de entrada y salida." data-casos="Proyectos con estructuras de datos complejas pero bien definidas secuencialmente." data-ventajas="Estructura de código predecible, altamente lógica y modular." data-desventajas="Complejo de aplicar si el flujo de datos no es puramente secuencial." data-enfoque="Modelado basado estrictamente en las estructuras de datos.">
-        <span class="method-tag tradicional">Estructurado</span>
-        <h3>JSP</h3>
-        <p>Programación Estructurada de Jackson. Se centra en la correspondencia exacta entre la estructura del flujo de datos y la estructura del código.</p>
-      </div>
-
-      <div class="method-card" data-nombre="JSD" data-tags="Estructurado, Ciclo de vida, Eventos" data-definicion="Diseño de Sistemas de Jackson. Extensión de JSP para abarcar el ciclo de vida completo basándose en el modelado de eventos del mundo real." data-casos="Sistemas embebidos, sistemas de control de tiempo real y automatizaciones." data-ventajas="Mapeo preciso del mundo real hacia las entidades del software." data-desventajas="Curva de aprendizaje empinada y difícil escalabilidad en sistemas web masivos." data-enfoque="Modelado basado en eventos continuos y su orden en el tiempo.">
-        <span class="method-tag tradicional">Estructurado</span>
-        <h3>JSD</h3>
-        <p>Diseño de Sistemas de Jackson. Extensión de JSP que modela el ciclo de vida completo del software basándose en eventos del mundo real.</p>
-      </div>
-
-      <div class="method-card" data-nombre="Scrum" data-tags="Ágil, Iterativo, Adaptativo, Sprints" data-definicion="Marco de trabajo ágil e incremental diseñado para maximizar la entrega de valor en entornos complejos mediante ciclos cortos llamados Sprints." data-casos="Proyectos innovadores, desarrollo de MVPs y equipos multidisciplinarios dinámicos." data-ventajas="Alta flexibilidad, feedback continuo y mejora la productividad del equipo." data-desventajas="Riesgo de desvío de alcance si no hay objetivos claros." data-enfoque="Orientado al valor del cliente y la mejora continua del proceso.">
-        <span class="method-tag agil">Ágil</span>
-        <h3>Scrum</h3>
-        <p>Marco de trabajo incremental basado en Sprints. Maximiza el valor entregado mediante la inspección continua y la adaptación al cambio.</p>
-      </div>
-
-      <div class="method-card" data-nombre="eXtreme Programming (XP)" data-tags="Ágil, Técnico, TDD, Calidad" data-definicion="Metodología ágil enfocada fuertemente en la calidad del código mediante la implementación rigurosa de prácticas de ingeniería de software." data-casos="Proyectos pequeños o medianos con requerimientos muy cambiantes y alto riesgo técnico." data-ventajas="Código limpio, pocos bugs gracias a TDD y alta adaptabilidad." data-desventajas="Fuerte resistencia inicial del equipo por la exigencia de sus prácticas técnicas." data-enfoque="Excelencia técnica, refactorización y programación de pares.">
-        <span class="method-tag agil">Ágil</span>
-        <h3>XP (eXtreme Programming)</h3>
-        <p>Enfocado en la excelencia técnica. Promueve prácticas rigurosas como la programación en parejas, testing automatizado (TDD) y refactorización.</p>
-      </div>
-
-      <div class="method-card" data-nombre="Kanban" data-tags="Ágil, Visual, Flujo, WIP" data-definicion="Sistema visual de gestión de trabajo enfocado en optimizar el flujo de entrega limitando el Trabajo en Progreso (WIP)." data-casos="Equipos de soporte, mantenimiento de software o flujos de producción continuos." data-ventajas="Elimina cuellos de botella, reduce tiempos muertos y es fácil de adoptar." data-desventajas="No cuenta con un marco de planeación temporal definido a largo plazo." data-enfoque="Visualización integral del flujo y maximización de la eficiencia diaria.">
-        <span class="method-tag agil">Ágil</span>
-        <h3>Kanban</h3>
-        <p>Gestión visual que limita el Trabajo en Progreso (WIP). Ideal para flujos de trabajo continuos, soporte y optimización de cuellos de botella.</p>
-      </div>
-
-      <div class="method-card" data-nombre="FDD" data-tags="Ágil, Características, Arquitectura" data-definicion="Desarrollo Basado en Funcionalidades. Combina la agilidad con un diseño inicial guiado por el modelado de arquitectura general del sistema." data-casos="Proyectos corporativos grandes que necesitan metodologías ágiles pero estructuradas." data-ventajas="Altamente escalable en equipos masivos y reportes de progreso claros." data-desventajas="Mucha dependencia de los programadores principales (Chief Programmers)." data-enfoque="Desarrollo iterativo basado en pequeñas características funcionales.">
-        <span class="method-tag agil">Ágil</span>
-        <h3>FDD</h3>
-        <p>Desarrollo Basado en Funcionalidades. Combina las ventajas de las metodologías ágiles con un diseño de arquitectura inicial robusto.</p>
-      </div>
-
-      <div class="method-card" data-nombre="DAS" data-tags="Ágil, Adaptativo, Autoorganización" data-definicion="Desarrollo Ágil Adaptativo. Técnica que asume la incertidumbre como algo natural sustituyendo la planeación rígida por ciclos continuos." data-casos="Sistemas altamente complejos donde los requerimientos cambian constantemente de forma radical." data-ventajas="Fomenta la creatividad, resiliencia y el aprendizaje acelerado del equipo." data-desventajas="Difícil de gestionar si los miembros del equipo no son senior o autoorganizados." data-enfoque="Ciclos cíclicos de: Especulación, Colaboración y Aprendizaje.">
-        <span class="method-tag agil">Ágil</span>
-        <h3>DAS (Desarrollo Ágil Adaptativo)</h3>
-        <p>Metodología enfocada en la autoorganización de los equipos y el aprendizaje continuo a través de ciclos de Especulación-Colaboración-Aprendizaje.</p>
-      </div>
-
-      <div class="method-card" data-nombre="MDSD" data-tags="Híbrido, Modelos, Automatización" data-definicion="Desarrollo de Software Guiado por Modelos. Estrategia avanzada enfocada en crear especificaciones conceptuales para generar código de manera automatizada." data-casos="Sistemas multiplataforma complejos o arquitecturas empresariales con altos estándares de patrones." data-ventajas="Reducción masiva de errores en codificación manual y alta mantenibilidad conceptual." data-desventajas="Requiere herramientas CASE especializadas muy costosas y conocimientos avanzados." data-enfoque="Abstracción mediante modelos UML o específicos de dominio (DSL).">
-        <span class="method-tag hybrid">Híbrido</span>
-        <h3>MDSD</h3>
-        <p>Desarrollo de Software Guiado por Modelos. Automatiza la generación de código a partir de abstracciones y modelos arquitectónicos avanzados.</p>
-      </div>
-
-      <div class="method-card"  data-nombre="Prototipo" data-tags="Evolutivo, Validación, UX" data-definicion="Modelo de desarrollo basado en la creación rápida de maquetas funcionales previas para clarificar los requerimientos verdaderos con el cliente." data-casos="Sistemas con interfaces complejas o clientes que no tienen claro lo que necesitan al inicio." data-ventajas="Garantiza que el producto final cumpla con las expectativas del usuario y mitiga malentendidos." data-desventajas="Puede confundir al cliente haciéndole creer que el sistema real ya está terminado." data-enfoque="Diseño rápido, iteración visual y validación inmediata.">
-        <span class="method-tag hybrid">Evolutivo</span>
-        <h3>Prototipo</h3>
-        <p>Estrategia enfocada en construir versiones rápidas y parciales del sistema para mitigar riesgos de requerimientos junto al usuario final.</p>
-      </div>
+      {% for metodo in biblioteca %}
+        <div class="method-card" 
+             data-nombre="{{ metodo.Nombre }}" 
+             data-tags="{{ metodo.Categoria }}" 
+             data-definicion="{{ metodo.Descripcion }}" 
+             data-casos="{{ metodo.CasosUso }}" 
+             data-ventajas="{{ metodo.Ventajas }}" 
+             data-desventajas="{{ metodo.Desventajas }}" 
+             data-enfoque="{{ metodo.Enfoque }}">
+          
+          <span class="method-tag {{ metodo.Categoria|lower }}">{{ metodo.Categoria }}</span>
+          
+          <h3>{{ metodo.Nombre }}</h3>
+          <p>{{ metodo.Descripcion }}</p>
+        </div>
+      {% empty %}
+        <div class="no-data-msg">
+          <p>No se encontraron métodos registrados en la biblioteca actualmente.</p>
+        </div>
+      {% endfor %}
 
     </div>
 
   </div>
-    <!--</main>-->
 
   <div class="modal-overlay" id="method-modal">
     <div class="modal-container">
