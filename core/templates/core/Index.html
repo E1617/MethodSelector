@@ -12,12 +12,12 @@
     <div class="dashboard-cards">
       <div class="card success">
         <h3>Proyectos Evaluados</h3>
-        <p>12 Proyectos</p>
+        <p>{{ proyectos|length }} Proyecto{{ proyectos|length|pluralize }}</p> 
       </div>
       <div class="card">
         <a href="{% url 'biblioteca' %}" style="color: inherit; text-decoration: none; display: block; height: 100%; width: 100%;">
           <h3>Métodos en Biblioteca</h3>
-          <p>10 Métodos</p>
+          <p>{{ total_metodos }} Método{{ total_metodos|pluralize }}</p> 
         </a>
       </div>
       <div class="card warning">
@@ -40,17 +40,24 @@
       <div class="slider-container" id="slider-container">
         <div class="method-card">
           <div class="method-tag">Tradicional</div>
+          <a href="{% url 'biblioteca' %}" style="color: inherit; text-decoration: none; display: block; height: 100%; width: 100%;">
           <h3>SSA/SD</h3>
+          </a>
           <p>Análisis y Diseño Estructurado de Sistemas. Ideal para proyectos estables y bien definidos basados en flujo de datos.</p>
+          
         </div>
         <div class="method-card">
           <div class="method-tag">Ágil</div>
+          <a href="{% url 'biblioteca' %}" style="color: inherit; text-decoration: none; display: block; height: 100%; width: 100%;">
           <h3>Scrum</h3>
+          </a>
           <p>Marco de trabajo iterativo e incremental. Excelente para equipos que necesitan adaptarse rápidamente a cambios (sprints).</p>
         </div>
         <div class="method-card">
           <div class="method-tag">Ágil / Técnico</div>
+          <a href="{% url 'biblioteca' %}" style="color: inherit; text-decoration: none; display: block; height: 100%; width: 100%;">
           <h3>eXtreme Programming (XP)</h3>
+          </a>
           <p>Enfocado en la calidad del software y la capacidad de respuesta a requisitos cambiantes mediante programación en pares y TDD.</p>
         </div>
         <div class="method-card">
@@ -82,30 +89,46 @@
         <thead>
           <tr>
             <th>Nombre del Proyecto</th>
+            <th>Cliente / Organización</th>
+            <th>Presupuesto</th>
             <th>Fecha</th>
             <th>Método Recomendado</th>
             <th>Estado</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Sistema de RRHH Corp</td>
-            <td>19/06/2026</td>
-            <td><span class="badge scrum">Scrum</span></td>
-            <td>Seleccionado</td>
-          </tr>
-          <tr>
-            <td>App Móvil Delivery</td>
-            <td>15/06/2026</td>
-            <td><span class="badge xp">eXtreme Programming</span></td>
-            <td>En Híbrido</td>
-          </tr>
-          <tr>
-            <td>Software Contable Gob</td>
-            <td>10/06/2026</td>
-            <td><span class="badge" style="background:#f3f4f6; color:#374151;">JSD</span></td>
-            <td>Completado</td>
-          </tr>
+          {% if proyectos %}
+            {% for proj in proyectos %}
+              <tr>
+                <td style="font-weight: 600; color: var(--text-main);">{{ proj.Nombre }}</td>
+                
+                <td>{{ proj.Cliente|default:"-" }}</td>
+                <td style="font-family: monospace; font-size: 0.95rem; color: var(--secondary-color); font-weight: bold;">
+                  {% if proj.Presupuesto%}${{ proj.Presupuesto}}{% else %}-{% endif %}
+                </td>
+                
+                <td style="color: var(--text-light);">{{ proj.Fecha|date:"d/m/Y" }}</td>
+                
+                <td>
+                  <span class="badge" style="background-color: rgba(5, 21, 66, 0.08); color: var(--primary-color); font-weight: 600; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; display: inline-block;">
+                    {{ proj.Resultado}}
+                  </span>
+                </td>
+                
+                <td>
+                  <span style="color: #2563eb; background-color: #eff6ff; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">
+                    {{ proj.estado|default:"Evaluado" }}
+                  </span>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-light); padding: 30px; font-style: italic;">
+                No se han encontrado evaluaciones de proyectos recientes en la base de datos.
+              </td>
+            </tr>
+          {% endif %}
         </tbody>
       </table>
     </div>
