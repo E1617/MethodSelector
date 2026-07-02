@@ -1,6 +1,152 @@
-// ... Todo tu JS anterior se queda exactamente igual (Regiones 1, 2, 3 y 4) ...
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // #region 1. LOGICA DE NAVEGACIÓN Y MENÚS
+    const menuItems = document.querySelectorAll('.nav-links li, #menu-links li');
 
-// #region 5. MOTOR DE EVALUACIÓN (CONEXIÓN CON STORED PROCEDURES)
+    function changeMenu(event) {
+        menuItems.forEach(item => item.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        console.log("Navegando a: " + event.currentTarget.innerText);
+    }
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', changeMenu);
+    });
+    // #endregion
+
+    // #region 2. LOGICA DEL SLIDER DE MÉTODOS (INICIO)
+    const sliderContainer = document.getElementById('slider-container');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    if (btnPrev && sliderContainer) {
+        btnPrev.addEventListener('click', () => {
+            sliderContainer.scrollBy({ left: -344, behavior: 'smooth' });
+        });
+    }
+
+    if (btnNext && sliderContainer) {
+        btnNext.addEventListener('click', () => {
+            sliderContainer.scrollBy({ left: 344, behavior: 'smooth' });
+        });
+    }
+    // #endregion
+
+    // #region 3. VENTANA MODAL (DETALLES DE BIBLIOTECA)
+    const modal = document.getElementById('method-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const cards = document.querySelectorAll('.method-card');
+
+    const mTitle = document.getElementById('modal-title');
+    const mTagsContainer = document.getElementById('modal-tags-container');
+    const mDef = document.getElementById('modal-def');
+    const mEnfoque = document.getElementById('modal-enfoque');
+    const mCasos = document.getElementById('modal-casos');
+    const mVentajas = document.getElementById('modal-ventajas');
+    const mDesventajas = document.getElementById('modal-desventajas');
+
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            const nombre = card.getAttribute('data-nombre');
+            const tags = card.getAttribute('data-tags');
+            const definicion = card.getAttribute('data-definicion');
+            const casos = card.getAttribute('data-casos');
+            const ventajas = card.getAttribute('data-ventajas');
+            const desventajas = card.getAttribute('data-desventajas');
+            const enfoque = card.getAttribute('data-enfoque');
+
+            if (nombre) {
+                mTitle.innerText = nombre;
+                mDef.innerText = definicion;
+                mEnfoque.innerText = enfoque;
+                mCasos.innerText = casos;
+                mVentajas.innerText = ventajas;
+                mDesventajas.innerText = desventajas;
+
+                mTagsContainer.innerHTML = '';
+                if (tags) {
+                    tags.split(',').forEach(tag => {
+                        const pill = document.createElement('span');
+                        pill.classList.add('modal-pill');
+                        pill.innerText = tag.trim();
+                        mTagsContainer.appendChild(pill);
+                    });
+                }
+
+                modal.classList.add('show');
+            }
+        });
+    });
+
+    function closeModal() {
+        if (modal) modal.classList.remove('show');
+    }
+
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeModal);
+    }
+    
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
+    // #endregion
+
+    // #region 4. BUSCADOR Y FILTROS EN TIEMPO REAL (BIBLIOTECA)
+    const searchInput = document.querySelector('.search-input');
+    const filterTags = document.querySelectorAll('.filter-tag');
+
+    function filtrarMetodos() {
+        const tarjetasDinamicas = document.querySelectorAll('.method-card');
+        const textoBusqueda = searchInput ? searchInput.value.toLowerCase().trim() : "";
+        const tagActivoText = document.querySelector('.filter-tag.active') ? document.querySelector('.filter-tag.active').innerText.toLowerCase().trim() : "todos";
+
+        tarjetasDinamicas.forEach(card => {
+            const nombre = card.querySelector('h3') ? card.querySelector('h3').innerText.toLowerCase() : "";
+            const descripcion = card.querySelector('p') ? card.querySelector('p').innerText.toLowerCase() : "";
+            const tipoTag = card.querySelector('.method-tag') ? card.querySelector('.method-tag').innerText.toLowerCase().trim() : "";
+            const dataTags = card.getAttribute('data-tags') ? card.getAttribute('data-tags').toLowerCase() : "";
+
+            const coincideTexto = nombre.includes(textoBusqueda) || descripcion.includes(textoBusqueda);
+            let coincideTag = false;
+            
+            if (tagActivoText === "todos") {
+                coincideTag = true;
+            } else {
+                const limpiarTildes = (str) => str.replace(/[á]/g, 'a').replace(/[é]/g, 'e').replace(/[í]/g, 'i').replace(/[ó]/g, 'o').replace(/[ú]/g, 'u');
+
+                const tagBuscadoLimpio = limpiarTildes(tagActivoText);
+                const tagTarjetaLimpio = limpiarTildes(tipoTag);
+                const dataTagsLimpio = limpiarTildes(dataTags);
+
+                if (tagTarjetaLimpio.includes(tagBuscadoLimpio) || dataTagsLimpio.includes(tagBuscadoLimpio)) {
+                    coincideTag = true;
+                }
+            }
+
+            if (coincideTexto && coincideTag) {
+                card.style.display = "flex";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', filtrarMetodos);
+    }
+
+    filterTags.forEach(tag => {
+        tag.addEventListener('click', (e) => {
+            filterTags.forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            filtrarMetodos();
+        });
+    });
+    // #endregion
+
+    // #region 5. MOTOR DE EVALUACIÓN (CONEXIÓN CON STORED PROCEDURES)
     const step1 = document.getElementById('wizard-step-1');
     const step2 = document.getElementById('wizard-step-2');
     const btnTo2 = document.getElementById('btn-to-step-2');
@@ -14,7 +160,6 @@
     const instruccionFase = document.getElementById('instruccion-fase');
     const btnSubmitEvaluar = document.getElementById('btn-submit-evaluar');
 
-    // Elementos de la nueva Modal Final
     const modalFinal = document.getElementById('modal-resultado-final');
     const txtCategoriaGanadora = document.getElementById('txt-categoria-ganadora');
     const selectMetodoGanador = document.getElementById('select-metodo-ganador');
@@ -44,18 +189,18 @@
                     questionCard.innerHTML = `
                         <h4>${index + 1}. ¿Cómo afecta el criterio <strong>${criterio}</strong> al desarrollo del proyecto?</h4>
                         <div class="radio-options">
-                          <label class="radio-container">
-                            <input type="radio" name="${radioName}" value="5" data-categoria="agil" required> Alto / Flexible (Enfoque Ágil)
-                          </label>
-                          <label class="radio-container">
-                            <input type="radio" name="${radioName}" value="5" data-categoria="formal"> Rígido / Normativo (Enfoque Formal)
-                          </label>
-                          <label class="radio-container">
-                            <input type="radio" name="${radioName}" value="5" data-categoria="heuristico"> Complejo / Algorítmico (Enfoque Heurístico)
-                          </label>
-                          <label class="radio-container">
-                            <input type="radio" name="${radioName}" value="5" data-categoria="evolutivo"> Experimental / Incierto (Enfoque Evolutivo)
-                          </label>
+                            <label class="radio-container">
+                                <input type="radio" name="${radioName}" value="5" data-categoria="agil" required> Alto / Flexible (Enfoque Ágil)
+                            </label>
+                            <label class="radio-container">
+                                <input type="radio" name="${radioName}" value="5" data-categoria="formal"> Rígido / Normativo (Enfoque Formal)
+                            </label>
+                            <label class="radio-container">
+                                <input type="radio" name="${radioName}" value="5" data-categoria="heuristico"> Complejo / Algorítmico (Enfoque Heurístico)
+                            </label>
+                            <label class="radio-container">
+                                <input type="radio" name="${radioName}" value="5" data-categoria="evolutivo"> Experimental / Incierto (Enfoque Evolutivo)
+                            </label>
                         </div>
                     `;
                     questionsContainer.appendChild(questionCard);
@@ -109,7 +254,6 @@
         });
     }
 
-    // Procesar el envío por fases
     if (questionsForm) {
         questionsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -129,7 +273,6 @@
                 cargarPreguntasFase(fasesDinamicas[faseActualIndex]);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-                // ¡Fin del cuestionario! Calculamos ganadora
                 let categoriaGanadora = "agil";
                 let maxPuntaje = -1;
                 for (let cat in conteoCategoriasGlobal) {
@@ -139,11 +282,9 @@
                     }
                 }
 
-                // 1. Mostrar la modal final y asignar el título
                 txtCategoriaGanadora.innerText = categoriaGanadora.toUpperCase();
                 modalFinal.style.display = "flex";
 
-                // 2. Alimentar el combo llamando a obtener_metodos_por_categoria (usa GetMethodsForCategoria)
                 selectMetodoGanador.innerHTML = '<option value="">Cargando métodos...</option>';
                 try {
                     const res = await fetch(`/api/obtener-metodos/?categoria=${categoriaGanadora}`);
@@ -173,6 +314,14 @@
         finalSaveForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            // Capturamos el elemento select de los métodos
+            const comboMetodo = document.getElementById('select-metodo-ganador');
+            const metodoId = parseInt(comboMetodo.value);
+            
+            // Si tu SP espera el NOMBRE del método en "resultado_rec", usamos comboMetodo.options[comboMetodo.selectedIndex].text
+            // Si espera el ID en formato string, usamos comboMetodo.value. Aquí asignamos el ID:
+            const nombreMetodoSeleccionado = comboMetodo.options[comboMetodo.selectedIndex].text;
+
             // Empaquetamos los datos capturados en el Paso 1
             const payload = {
                 proyecto: {
@@ -181,8 +330,9 @@
                     cliente: document.getElementById('proj-client').value,
                     presupuesto: document.getElementById('proj-budget').value
                 },
-                metodo_id: parseInt(selectMetodoGanador.value),
-                resultado_rec: document.getElementById('txt-recomendacion-final').value
+                metodo_id: metodoId,
+                // CORRECCIÓN: Ahora toma el ID/Valor del método seleccionado en vez del textarea
+                resultado_rec: nombreMetodoSeleccionado 
             };
 
             try {
@@ -216,4 +366,5 @@
             modalFinal.style.display = "none";
         });
     }
-// #endregion
+
+});
