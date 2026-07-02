@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% block contenido %}
   <header class="topbar">
-    <h2>Biblioteca de Métodos</h2>
+    <h2>Comparador de Metodologías</h2>
     <div><span>Usuario Ing. Software</span></div>
   </header>
 
@@ -9,34 +9,24 @@
       
     <div class="library-filters">
       <input type="text" placeholder="🔍 Buscar método (Scrum, XP, SSA/SD...)" class="search-input">
+      <div class="filter-tags">
+        <span class="filter-tag active">Todos</span>
+        <span class="filter-tag">Ágiles</span>
+        <span class="filter-tag">Tradicionales</span>
+        <span class="filter-tag">Estructurados</span>
+      </div>
     </div>
 
     <div class="library-grid">
         
-      {% for metodo in biblioteca %}
-        <div class="method-card" 
-             data-nombre="{{ metodo.Nombre }}" 
-             data-tags="{{ metodo.Categoria }}" 
-             data-definicion="{{ metodo.Descripcion }}" 
-             data-casos="{{ metodo.CasosUso }}" 
-             data-ventajas="{{ metodo.Ventajas }}" 
-             data-desventajas="{{ metodo.Desventajas }}" 
-             data-enfoque="{{ metodo.Enfoque }}">
-          
-          <span class="method-tag {{ metodo.Categoria|lower }}">{{ metodo.Categoria }}</span>
-          
-          <h3>{{ metodo.Nombre }}</h3>
-          <p>{{ metodo.Descripcion }}</p>
-        </div>
-      {% empty %}
-        <div class="no-data-msg">
-          <p>No se encontraron métodos registrados en la biblioteca actualmente.</p>
-        </div>
-      {% endfor %}
+      <div class="method-card" data-nombre="SSA/SD" data-tags="Tradicional, Predictivo, Estructurado" data-definicion="Análisis y Diseño Estructurado de Sistemas. Método clásico enfocado en el flujo de datos y procesos lógicos." data-casos="Sistemas gubernamentales, software bancario central e infraestructura crítica." data-ventajas="Documentación exhaustiva y fases claramente definidas desde el inicio." data-desventajas="Inflexible ante cambios y detección tardía de errores de diseño." data-enfoque="Orientado a procesos lineales y flujos de datos estructurados.">
+        
+      </div>
 
     </div>
 
   </div>
+    <!--</main>-->
 
   <div class="modal-overlay" id="method-modal">
     <div class="modal-container">

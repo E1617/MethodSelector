@@ -27,6 +27,18 @@
 
               <div class="form-row">
                 <div class="form-group">
+                  <label for="proj-client">Cliente / Organización Stakeholder</label>
+                  <input type="text" id="proj-client" placeholder="Ej. Corporación Alfa S.A." required>
+                </div>
+
+                <div class="form-group">
+                  <label for="proj-budget">Presupuesto Estimado ($)</label>
+                  <input type="number" id="proj-budget" placeholder="Ej. 15000" min="0" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
                   <label for="team-size">Tamaño del Equipo</label>
                   <select id="team-size" required>
                     <option value="" disabled selected>Seleccione...</option>
@@ -40,20 +52,22 @@
                   <label for="req-type">Tipo de Requerimientos Iniciales</label>
                   <select id="req-type" required>
                     <option value="" disabled selected>Seleccione...</option>
-                    <option value="stable">Muy Claros y Estables (Poco Cambio)</option>
-                    <option value="flexible">Definidos pero con Cambios Esperados</option>
-                    <option value="emergent">Altamente Volátiles / Emergentes</option>
+                    <option value="formal">Muy Claros y Estables (Enfoque Formal / Tradicional)</option>
+                    <option value="heuristico">Definidos con complejidad algorítmica (Enfoque Heurístico)</option>
+                    <option value="agil">Altamente Volátiles / Cambiantes (Enfoque Ágiles)</option>
+                    <option value="evolutivo">Desconocidos / Requieren experimentación (Enfoque Evolutivo)</option>
                   </select>
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="org-context">Contexto Organizacional / Cultura de la Empresa</label>
-                <select id="org-context" required>
+                <label for="sys-criticality">Criticidad del Sistema (Impacto ante fallos)</label>
+                <select id="sys-criticality" required>
                   <option value="" disabled selected>Seleccione...</option>
-                  <option value="traditional">Estructurada / Corporativa Rigurosa (Prefiere Documentación)</option>
-                  <option value="collaborative">Colaborativa / Startup (Orientada a Resultados Rápidos)</option>
-                  <option value="regulated">Altamente Regulada (Gubernamental, Auditorías, Enfoque Normativo)</option>
+                  <option value="baja">Baja (Pérdidas de tiempo menores, fácil recuperación - Tiende a Ágil)</option>
+                  <option value="media">Media (Pérdidas financieras moderadas, afectación parcial - Tiende a Híbrido)</option>
+                  <option value="alta">Alta (Grandes pérdidas operativas, afectación legal - Tiende a Heurístico)</option>
+                  <option value="critica">Crítica / Vital (Riesgo de vidas humanas, quiebras estructurales - Tiende a Formal)</option>
                 </select>
               </div>
 
@@ -65,62 +79,44 @@
 
           <div class="wizard-step-content" id="wizard-step-2">
             <div class="wizard-instruction">
-              <p>Responda los siguientes factores clave del sílabo para determinar el grado de agilidad o rigurosidad tradicional necesaria:</p>
+              <p id="instruccion-fase">Responda los siguientes factores clave para determinar el grado de agilidad o rigurosidad tradicional necesaria:</p>
             </div>
 
             <form id="criteria-questions-form" class="wizard-form">
-                
-              <div class="question-card">
-                <h4>1. ¿Con qué frecuencia se esperan cambios en los requisitos del sistema?</h4>
-                <div class="radio-options">
-                  <label class="radio-container">
-                    <input type="radio" name="q-volatility" value="1" required> Casi nunca. Los requisitos normativos o el diseño están fijos.
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-volatility" value="3"> Moderada de forma mensual o por fases programadas.
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-volatility" value="5"> Muy alta. Evolucionan semana a semana junto con el mercado.
-                  </label>
-                </div>
-              </div>
-
-              <div class="question-card">
-                <h4>2. ¿Cuál es el impacto financiero o humano ante una falla crítica en producción?</h4>
-                <div class="radio-options">
-                  <label class="radio-container">
-                    <input type="radio" name="q-criticality" value="5" required> Bajo (Pérdidas menores de comodidad o re-trabajo simple).
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-criticality" value="3"> Alto (Pérdidas financieras significativas o problemas legales comerciales).
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-criticality" value="1"> Vital / Extremo (Pérdidas de vidas humanas, quiebras o fallas de infraestructura básica).
-                  </label>
-                </div>
-              </div>
-
-              <div class="question-card">
-                <h4>3. ¿Dispone de un cliente o Product Owner para revisiones e interacciones constantes?</h4>
-                <div class="radio-options">
-                  <label class="radio-container">
-                    <input type="radio" name="q-delivery" value="1" required> No, solo al inicio y durante la firma de entregables finales.
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-delivery" value="3"> Ocasionalmente (Reuniones quincenales o mensuales de control).
-                  </label>
-                  <label class="radio-container">
-                    <input type="radio" name="q-delivery" value="5"> Totalmente disponible para interactuar y validar el progreso diariamente.
-                  </label>
-                </div>
-              </div>
+              <div id="dynamic-questions-container"></div>
 
               <div class="wizard-actions">
                 <button type="button" class="btn secondary-btn" id="btn-back-to-1">⬅️ Atrás</button>
-                <button type="submit" class="btn success-btn">Calcular Recomendación 📊</button>
+                <button type="submit" class="btn success-btn" id="btn-submit-evaluar">Calcular Recomendación 📊</button>
               </div>
             </form>
           </div>
         </div>
+    </div>
+
+    <div id="modal-resultado-final" class="modal-evaluar" style="display:none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center;">
+      <div class="modal-content" style="background: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <h3>📊 Resultado de la Evaluación</h3>
+        <p style="margin-top: 10px;">La categoría recomendada por el sistema experto es: <strong id="txt-categoria-ganadora" style="color: #007BFF; font-size: 1.2em;"></strong></p>
+        
+        <form id="final-save-form" style="margin-top: 20px;">
+          <div class="form-group" style="margin-bottom: 15px;">
+            <label for="select-metodo-ganador" style="font-weight: bold; display:block; margin-bottom: 5px;">Seleccione el Método Ganador Específico:</label>
+            <select id="select-metodo-ganador" style="width:100%; padding: 8px; border-radius: 4px;" required>
+              <option value="">Cargando metodologías...</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 15px;">
+            <label for="txt-recomendacion-final" style="font-weight: bold; display:block; margin-bottom: 5px;">Resultado / Recomendación (Sujeto a Auditoría):</label>
+            <textarea id="txt-recomendacion-final" rows="3" style="width:100%; padding: 8px; border-radius: 4px;" required placeholder="Escriba los detalles de la recomendación de adopción..."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button type="button" class="btn secondary-btn" id="btn-cerrar-modal-final" style="background:#6c757d; color:white; border:none; padding:10px 15px; border-radius:4px; cursor:pointer;">Cancelar</button>
+            <button type="submit" class="btn" style="background:#28a745; color:white; border:none; padding:10px 15px; border-radius:4px; cursor:pointer;">Guardar Evaluación Completa 💾</button>
+          </div>
+        </form>
+      </div>
     </div>
 {% endblock %}
