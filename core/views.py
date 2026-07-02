@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
+
 import json 
 import datetime
 
@@ -31,7 +32,7 @@ def inicio(request):
 
 def evaluar(request): 
     return render(request, 'core/Evaluar.html')
-
+  
 def obtener_criterios_fase(request):
     fase_solicitada = request.GET.get('fase', '')
     if not fase_solicitada:
@@ -84,12 +85,11 @@ def guardar_evaluacion_completa(request):
                 params_proyecto = [
                     proyecto.get('nombre'),
                     proyecto.get('descripcion'),
-                    fecha_proyecto, 
+                    fecha_proyecto,
                     proyecto.get('presupuesto'),
                     proyecto.get('cliente'),
                 ]
                 cursor.callproc('InsertNewProjet', params_proyecto)
-                
                 cursor.execute("SELECT LAST_INSERT_ID();")
                 id_proyecto_nuevo = cursor.fetchone()[0]
                 
@@ -98,6 +98,13 @@ def guardar_evaluacion_completa(request):
             return JsonResponse({
                 'status': 'success',
                 'message': '¡Proyecto creado exitosamente!',
+                cursor.execute("SELECT LAST_INSERT_ID();")
+                id_proyecto_nuevo = cursor.fetchone()[0]
+                cursor.callproc('InsertDatailCuestionario', [metodo_id, id_proyecto_nuevo, resultado_rec])
+                
+            return JsonResponse({
+                'status': 'success',
+                'message': '¡Proyecto creado y criterios asociados exitosamente con el SP!',
                 'id_proyecto': id_proyecto_nuevo
             })
             
