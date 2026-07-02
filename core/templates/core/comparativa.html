@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% block contenido %}
+<div class="container mt-4" style="font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px;">
+    
+    <h2>Comparador de Métodos</h2>
+    <p>Selecciona los métodos que deseas contrastar y presiona el botón para generar la tabla.</p>
+    
+    <hr>
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 20px;">
+            <h3>Opciones disponibles:</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                {% for metodo in todos_los_metodos %}
+                    <label style="display: flex; align-items: center; cursor: pointer; user-select: none;">
+                        <input type="checkbox" name="method_ids" value="{{ metodo.ID }}" style="margin-right: 8px; transform: scale(1.2);">
+                        {{ metodo.Nombre }}
+                    </label>
+                {% empty %}
+                    <p>No hay métodos registrados en la base de datos.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; transition: background 0.2s;">
+            Generar Tabla Comparativa
+        </button>
+    </form>
+
+    <br><hr><br>
+
+    {% if mostrar_tabla %}
+        <h3>Resultado de la Comparación</h3>
+        
+        <table border="1" style="border-collapse: collapse; width: 100%; text-align: left; margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <thead>
+                <tr style="background-color: #f4f4f4;">
+                    <th style="padding: 12px;">Característica / Campo</th>
+                    {% for metodo in metodos_seleccionados %}
+                        <th style="padding: 12px; background-color: #e9ecef;">{{ metodo.Nombre }}</th> 
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for fila in filas %}
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 12px; background-color: #fdfdfd;"><strong>{{ fila.nombre_caracteristica|title }}</strong></td>
+                        {% for valor in fila.valores %}
+                            <td style="padding: 12px;">{{ valor|default:"---" }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="background-color: #fff3cd; color: #856404; padding: 15px; border-radius: 5px; border: 1px solid #ffeeba; margin-top: 20px;">
+          Por favor, selecciona al menos un método de la lista de arriba para visualizar la tabla comparativa.
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
