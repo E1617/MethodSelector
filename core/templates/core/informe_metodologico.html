@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe de Auditoría Metodológica - {{ proyecto.Nombre }}</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #1e293b;
+            margin: 0;
+            padding: 40px;
+            background-color: #ffffff;
+            line-height: 1.6;
+        }
+        .reporte-container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .header-oficial {
+            border-bottom: 3px double #051542;
+            padding-bottom: 15px;
+            margin-bottom: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-oficial h1 {
+            font-size: 1.7rem;
+            color: #051542;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .header-oficial p {
+            margin: 4px 0 0 0;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .tabla-datos {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .tabla-datos td {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+        .tabla-datos td.header-cell {
+            background-color: #f8fafc;
+            font-weight: bold;
+            width: 23%;
+            color: #051542;
+        }
+        .cuadro-justificacion {
+            background: #fafafa;
+            border-left: 5px solid #07ad76;
+            padding: 22px;
+            border-radius: 4px;
+            margin-top: 20px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+        }
+        
+        @media print {
+            body { padding: 0; margin: 0; }
+            .no-print { display: none; }
+            @page { size: A4; margin: 2.5cm; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print" style="background: #f1f5f9; padding: 14px; border-radius: 8px; text-align: center; margin-bottom: 30px; border: 1px solid #cbd5e1; max-width: 850px; margin-left: auto; margin-right: auto;">
+        <span style="font-size: 0.95rem; font-weight: bold; color: var(--primary-color); display: block; margin-bottom: 8px;">📋 Documento Técnico de Adopción Generado con Éxito</span>
+        <button onclick="window.print();" style="background: #051542; color: white; border: none; padding: 9px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px;">
+          Confirmar Guardado / Imprimir como PDF
+        </button>
+    </div>
+
+    <div class="reporte-container">
+        <header class="header-oficial">
+            <div>
+                <h1>MethodSelector — Informe de Idoneidad</h1>
+                <p>Dictamen Consultor de Ingeniería y Ciclos de Vida de Software</p>
+            </div>
+            <div style="text-align: right; font-size: 0.9rem; color: #475569;">
+                <strong>Fecha Emisión:</strong> {{ proyecto.Fecha|date:"d/m/Y" }}
+            </div>
+        </header>
+
+        <h3 style="color: #051542; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-top: 0;">1. COMPONENTES Y CRITERIOS ESTRUCTURALES</h3>
+        <table class="tabla-datos">
+            <tr>
+                <td class="header-cell">Proyecto Evaluado:</td>
+                <td style="font-weight: 600;">{{ proyecto.Nombre }}</td>
+                <td class="header-cell">Organización / Cliente:</td>
+                <td>{{ proyecto.Cliente|default:"Estipulación interna académica" }}</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Presupuesto Asignado:</td>
+                <td style="font-family: monospace; font-weight: bold; color: #07ad76;">
+                    {% if proyecto.Presupuesto %}${{ proyecto.Presupuesto }}{% else %}-{% endif %}
+                </td>
+                <td class="header-cell">Dimensión del Equipo:</td>
+                <td>{{ proyecto.Tamaño_Equipo }} Integrantes Activos</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Características del Alcance:</td>
+                <td colspan="3">{{ proyecto.Descripcion }}</td>
+            </tr>
+            <tr>
+                <td class="header-cell">Naturaleza de Requerimientos:</td>
+                <td colspan="3" style="font-style: italic; color: #475569;">{{ proyecto.Requerimientos|default:"No parametrizados formalmente." }}</td>
+            </tr>
+        </table>
+
+        <h3 style="color: #051542; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-top: 35px;">2. FUNDAMENTACIÓN TÉCNICA DEL DICTAMEN</h3>
+        <p style="font-size: 0.95rem; color: #334155;">El motor analítico del sistema experto, tras ponderar las restricciones operativas e incertidumbre del alcance técnico, resuelve la adopción imperativa del siguiente marco:</p>
+
+        <div class="cuadro-justificacion">
+            <h4 style="margin: 0 0 12px 0; color: #051542; font-size: 1.15rem; font-weight: 700;">
+                🎯 Enfoque Metodológico Seleccionado: {{ proyecto.Resultado }}
+            </h4>
+            <p style="margin: 0; font-size: 0.95rem; text-align: justify; color: #334155; white-space: pre-line;">
+                {{ proyecto.Resultado_Justificacion }}
+            </p>
+        </div>
+
+        <div style="margin-top: 100px; display: flex; justify-content: center;">
+            <div style="text-align: center; font-size: 0.85rem; color: #64748b;">
+                <div style="width: 240px; border-top: 1px solid #cbd5e1; padding-top: 6px; font-weight: 500;">
+                    Firma Responsable Auditoría<br>Área de Procesos de Desarrollo
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lanza automáticamente la ventana de impresión del sistema operativo
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
