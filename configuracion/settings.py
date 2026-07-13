@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ta^wx)l-o(*c2$#vue)8+#lnjv8a_=huj_98h&%%k%&w-7zcop
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.dev']
 
 
 # Application definition
@@ -124,3 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.ngrok-free.dev',
+]
