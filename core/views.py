@@ -18,6 +18,12 @@ def inicio(request):
             cursor.callproc('GetAllMethodsDescription')
             resultados_metodos = cursor.fetchall()
             total_metodos = len(resultados_metodos) 
+
+        with connection.cursor() as cursor:
+            cursor.callproc('GetProjetsByListAll') 
+            resultados_proyectos = cursor.fetchall()
+            columnas_p = [col[0] for col in cursor.description]
+            lista_proyectos_Totales = [dict(zip(columnas_p, fila)) for fila in resultados_proyectos]     
             
     except Exception as e:
         print(f"Error en el dashboard: {e}")
@@ -25,6 +31,7 @@ def inicio(request):
         total_metodos = 0 
 
     contexto = {
+        'total_proyectos': lista_proyectos_Totales,
         'proyectos': lista_proyectos,
         'total_metodos': total_metodos
     }
@@ -88,19 +95,14 @@ def guardar_evaluacion_completa(request):
                     fecha_proyecto,
                     proyecto.get('presupuesto'),
                     proyecto.get('cliente'),
+                    proyecto.get('Equipo'),
+                    proyecto.get('Requisitos'),
                 ]
                 cursor.callproc('InsertNewProjet', params_proyecto)
                 cursor.execute("SELECT LAST_INSERT_ID();")
                 id_proyecto_nuevo = cursor.fetchone()[0]
                 
                 cursor.callproc('InsertDatailCuestionario', [id_proyecto_nuevo, metodo_id, resultado_rec])
-                
-            return JsonResponse({
-                'status': 'success',
-                'message': '¡Proyecto creado exitosamente!',
-                cursor.execute("SELECT LAST_INSERT_ID();")
-                id_proyecto_nuevo = cursor.fetchone()[0]
-                cursor.callproc('InsertDatailCuestionario', [metodo_id, id_proyecto_nuevo, resultado_rec])
                 
             return JsonResponse({
                 'status': 'success',
@@ -112,3 +114,66 @@ def guardar_evaluacion_completa(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
             
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def historial_completo(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.callproc('GetProjetsByListAll') 
+            resultados = cursor.fetchall()
+            columnas = [col[0] for col in cursor.description]
+            lista_proyectos = [dict(zip(columnas, fila)) for fila in resultados]
+
+    except Exception as e:
+        print(f"Error al recuperar el historial completo: {e}")
+        lista_proyectos = []
+
+    contexto = {
+        'proyectos': lista_proyectos
+    }
+    
+    return render(request, 'core/Historial.html', contexto)
+
+def obtener_justificacion(request, id_proyecto):
+    try:
+        with connection.cursor() as cursor:
+            cursor.callproc('GetJustificacionesById', [id_proyecto])
+            resultados = cursor.fetchall() 
+            
+            if resultados:
+                lista_justificaciones = [fila[0] for fila in resultados if fila[0]]
+                justificaciones_recortadas = lista_justificaciones[:2]
+                texto_previsualizador = "\n\n".join(justificaciones_recortadas)
+                
+                return JsonResponse({'status': 'success', 'justificacion': texto_previsualizador})
+            else:
+                return JsonResponse({'status': 'success', 'justificacion': 'No se encontraron cláusulas registradas.'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+def generar_reporte(request, id_proyecto):
+    proyecto_datos = {}
+    try:
+        with connection.cursor() as cursor:
+            cursor.callproc('GetProjetsById', [id_proyecto]) 
+            resultado_datos = cursor.fetchone()
+            
+            if resultado_datos:
+                columnas_datos = [col[0] for col in cursor.description]
+                proyecto_datos = dict(zip(columnas_datos, resultado_datos))
+                
+            cursor.callproc('GetJustificacionesById', [id_proyecto])
+            resultados_just = cursor.fetchall() 
+            
+            if resultados_just:
+                lista_just = [fila[0] for fila in resultados_just if fila[0]]
+                proyecto_datos['Resultado_Justificacion'] = "\n\n".join(lista_just)
+            else:
+                proyecto_datos['Resultado_Justificacion'] = "No se registraron cláusulas de fundamentación técnica."
+                
+    except Exception as e:
+        print(f"Error al generar el informe combinado: {e}")
+        proyecto_datos = None
+
+    contexto = {'proyecto': proyecto_datos}
+    return render(request, 'core/informe_metodologico.html', contexto)

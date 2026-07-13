@@ -3,17 +3,17 @@
 {% block contenido %}
 <div class="container mt-4" style="font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px;">
     
-    <h2>Comparador de Métodos</h2>
-    <p>Selecciona los métodos que deseas contrastar y presiona el botón para generar la tabla.</p>
+    <h2>Comparador de Métodos</h2><br>
+    <p>Selecciona los métodos que deseas contrastar y <b>presiona el botón para generar la tabla.</b></p><br>
     
-    <hr>
+    
 
     <form method="POST" action="">
         {% csrf_token %}
         
         <div style="margin-bottom: 20px;">
-            <h3>Opciones disponibles:</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+            <h3 style="margin-bottom: 10px;">Opciones disponibles:</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; background: #f9f9f9; padding: 8px; border-radius: 12px; border: 3px solid #ddd; grid-auto-flow: row;">
                 {% for metodo in todos_los_metodos %}
                     <label style="display: flex; align-items: center; cursor: pointer; user-select: none;">
                         <input type="checkbox" name="method_ids" value="{{ metodo.ID }}" style="margin-right: 8px; transform: scale(1.2);">

@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // #endregion
 
-    // #region 2. LOGICA DEL SLIDER DE MÉTODOS (INICIO)
+
     const sliderContainer = document.getElementById('slider-container');
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // #endregion
 
-    // #region 5. MOTOR DE EVALUACIÓN (CONEXIÓN CON STORED PROCEDURES)
+    // #region 5. MOTOR DE EVALUACIÓN 
     const step1 = document.getElementById('wizard-step-1');
     const step2 = document.getElementById('wizard-step-2');
     const btnTo2 = document.getElementById('btn-to-step-2');
@@ -309,29 +309,28 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Evento para enviar y guardar definitivamente todo en la base de datos (POST)
     if (finalSaveForm) {
         finalSaveForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Capturamos el elemento select de los métodos
             const comboMetodo = document.getElementById('select-metodo-ganador');
             const metodoId = parseInt(comboMetodo.value);
-            
-            // Si tu SP espera el NOMBRE del método en "resultado_rec", usamos comboMetodo.options[comboMetodo.selectedIndex].text
-            // Si espera el ID en formato string, usamos comboMetodo.value. Aquí asignamos el ID:
             const nombreMetodoSeleccionado = comboMetodo.options[comboMetodo.selectedIndex].text;
+            const selectEquipo = document.getElementById('team-size');
+            const selectRequisitos = document.getElementById('req-type'); 
 
-            // Empaquetamos los datos capturados en el Paso 1
+            // Empaquetado de datos del paso 1
             const payload = {
                 proyecto: {
                     nombre: document.getElementById('proj-name').value,
                     descripcion: document.getElementById('proj-desc').value,
                     cliente: document.getElementById('proj-client').value,
-                    presupuesto: document.getElementById('proj-budget').value
+                    presupuesto: document.getElementById('proj-budget').value,
+                    // datos adicionales para el historial
+                    Equipo: selectEquipo.options[selectEquipo.selectedIndex].text,
+                    Requisitos: selectRequisitos.options[selectRequisitos.selectedIndex].text
                 },
                 metodo_id: metodoId,
-                // CORRECCIÓN: Ahora toma el ID/Valor del método seleccionado en vez del textarea
                 resultado_rec: nombreMetodoSeleccionado 
             };
 
@@ -368,3 +367,48 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+
+// #region 6. INTERACCIÓN DINÁMICA DE HISTORIAL Y CARGA ASÍNCRONA DE JUSTIFICACIONES
+    const toggleButtons = document.querySelectorAll('.toggle-details-btn');
+
+    toggleButtons.forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const targetId = e.target.getAttribute('data-target');
+            const targetRow = document.getElementById(targetId);
+            
+            // EXTRAEMOS EL ID REAL DIRECTAMENTE DEL ATRIBUTO DATA-ID DEL BOTÓN
+            const idProyecto = e.target.getAttribute('data-id');
+
+            if (targetRow) {
+                if (targetRow.style.display === 'none') {
+                    targetRow.style.display = 'table-row';
+                    e.target.innerText = 'Ocultar';
+                    e.target.style.color = '#dc2626';
+
+                    const justifBox = document.getElementById(`justif-box-${idProyecto}`);
+                    
+                    if (justifBox && justifBox.innerText.includes('Cargando')) {
+                        try {
+                            const response = await fetch(`/api/obtener-justificacion/${idProyecto}/`);
+                            const data = await response.json();
+                            
+                            if (data.status === 'success') {
+                                justifBox.innerText = data.justificacion;
+                            } else {
+                                justifBox.innerText = "No se pudieron cargar las cláusulas explicativas.";
+                            }
+                        } catch (error) {
+                            console.error("Error en Fetch Justificación:", error);
+                            justifBox.innerText = "Error de conexión al recuperar el dictamen.";
+                        }
+                    }
+
+                } else {
+                    targetRow.style.display = 'none';
+                    e.target.innerText = 'Ver Alcance';
+                    e.target.style.color = '#2563eb';
+                }
+            }
+        });
+    });
+    // #endregion
