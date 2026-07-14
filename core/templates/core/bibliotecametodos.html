@@ -7,8 +7,9 @@
 
   <div class="content-area">
       
-    <div class="library-filters">
+    <div class="library-filters" style="display: flex; align-items: left;">
       <input type="text" placeholder="🔍 Buscar método (Scrum, XP, SSA/SD...)" class="search-input">
+      <button class="btn" onclick="openModal('newmethod')">Nuevo Método</button>
     </div>
 
     <div class="library-grid">
@@ -76,4 +77,7 @@
       </div>
     </div>
   </div>
+
+<div id="modal-placeholder"></div>
+{%include 'core/nuevometodo.html' %}
 {% endblock %}
