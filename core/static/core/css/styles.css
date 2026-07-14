@@ -122,7 +122,21 @@ body {
     display: none; 
 }
 
-.method-card {
+.method-card{
+    background: #1e293b; /* Gris oscuro / Pizarra */
+    min-width: 320px;
+    max-width: 320px;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #334155; /* Borde sutil a juego */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.element-card{
     background: #1e293b; /* Gris oscuro / Pizarra */
     min-width: 320px;
     max-width: 320px;
@@ -142,7 +156,7 @@ body {
     border-color: #475569;
 }
 
-.method-tag {
+.method-tag{
     align-self: flex-start;
     background-color: rgba(37, 99, 235, 0.2); /* Fondo azul traslúcido */
     color: #38bdf8; /* Azul claro brillante legible en fondo oscuro */
@@ -154,12 +168,35 @@ body {
     letter-spacing: 0.5px;
 }
 
-.method-card h3 {
+.element-tag{
+    align-self: flex-start;
+    background-color: rgba(37, 99, 235, 0.2); /* Fondo azul traslúcido */
+    color: #38bdf8; /* Azul claro brillante legible en fondo oscuro */
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.method-card h3{
     font-size: 1.25rem;
     color: var(--white); /* Texto blanco para resaltar el título */
 }
 
-.method-card p {
+.method-card p{
+    color: #cbd5e1; /* Gris claro para una lectura cómoda */
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.element-card h3{
+    font-size: 1.25rem;
+    color: var(--white); /* Texto blanco para resaltar el título */
+}
+
+.element-card p{
     color: #cbd5e1; /* Gris claro para una lectura cómoda */
     font-size: 0.95rem;
     line-height: 1.5;
@@ -290,6 +327,10 @@ th {
     margin-bottom: 30px;
 }
 
+.add-element{
+    width: 70% !important;
+}
+
 .search-input {
     width: 100%;
     max-width: 500px;
@@ -377,7 +418,7 @@ th {
     background-color: #1e293b; 
     border: 1px solid #334155;
     width: 90%;
-    max-width: 650px;
+    max-width: 100%;
     max-height: 85vh;
     border-radius: 16px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -626,3 +667,27 @@ th {
 .success-btn:hover { background-color: #059669; }
 /* #endregion */
 
+/* Region - Nuevo metodo */
+/* Tarjeta normal */
+.element-card {
+    border: 2px solid rgba(37, 99, 235, 0.2); /* Ajusta según tu paleta */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+/* Tarjeta cuando está seleccionada */
+.element-card.selected {
+    border-color: #2ecc71 !important; /* Borde verde de éxito */
+    background-color: rgba(46, 204, 113, 0.05) !important; /* Fondo sutilmente verde */
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.15);
+}
+
+/* Estilo para el checkbox */
+.element-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #2ecc71; /* Pinta el checkbox de verde al marcarse */
+}
+/* #endregion */

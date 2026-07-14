@@ -1,0 +1,137 @@
+<div class="modal-overlay" id="newmethod-modal">
+  <div class="modal-container  add-element">
+    <!-- Botón de cerrar -->
+    <button class="modal-close-btn" id="close-modal-btn" onclick="closeModal('newmethod')">&times;</button>
+    
+    <!-- Encabezado del Modal -->
+    <div class="modal-header text-center">
+      <h2>Registrar Metodología</h2>
+      <p class="modal-subtitle">Configura los detalles del nuevo marco de trabajo</p>
+    </div>
+
+    <!-- PESTAÑAS (TABS) DE NAVEGACIÓN -->
+    <div class="modal-tabs" style="padding: 8px;">
+      <button class="tab-btn btn active" id="tab-btn-nuevo" onclick="switchModalTab('nuevo')">
+        Método Nuevo
+      </button>
+      <button class="tab-btn btn" id="tab-btn-hibrido" hx-get="{% url 'elementos' %}" onclick="switchModalTab('hibrido')">
+        Método Híbrido
+      </button>
+    </div>
+    
+    <!-- CUERPO DEL MODAL -->
+    <div class="modal-body">
+      
+      <!-- ================= CONTENIDO: MÉTODO NUEVO ================= -->
+      <div class="tab-content form-row" id="content-tab-nuevo">
+        <div class="info-section form-group">
+          <h4>Nombre de método</h4>
+          <input type="text" id="input-name" placeholder="Ej: Metodito">
+        </div>
+        <div class="info-section form-group">
+          <h4>Categoria</h4>
+          <input type="text" id="input-cat" placeholder="Ej. Formal, informal">
+        </div>
+        <div class="info-section form-group">
+          <h4>📌 Definición Breve</h4>
+          <input type="text" id="input-def" placeholder="Escribe una descripción corta...">
+        </div>
+        
+        <div class="info-section form-group">
+          <h4>🎯 Enfoque Principal</h4>
+          <input type="text" id="input-enfoque" placeholder="Ej. Agilidad, Predictivo, etc.">
+        </div>
+
+        <div class="info-section form-group">
+          <h4>💼 Casos de Uso Recomendados</h4>
+          <input type="text" id="input-casosuso" placeholder="¿Para qué proyectos se recomienda?">
+        </div>
+        
+        <div class="grid-split form-group">
+          <div class="info-section success-box">
+            <h4>✅ Ventajas</h4>
+            <textarea id="input-ventajas" placeholder="Enumera las ventajas principales..."></textarea>
+          </div>
+          <div class="info-section danger-box">
+            <h4>❌ Desventajas</h4>
+            <textarea id="input-desventajas" placeholder="Enumera los puntos débiles..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn" onclick="saveMethod()">Guardar Método</button>
+        </div>
+      </div>
+
+      <!-- ================= CONTENIDO: MÉTODO HÍBRIDO ================= -->
+      <div class="tab-content form-row" style="display: none;" id="content-tab-hibrido">
+        <div class="info-section form-group">
+          <h4>Nombre de Metodología</h4>
+          <input type="text" id="input-namenew" placeholder="Ej. Scrum + Kanban">
+        </div>
+
+        <div class="info-section form-group">
+          <h4>Descripción</h4>
+          <textarea id="input-descriptionnew" placeholder="Ej. Combinación para..."></textarea>
+        </div>
+
+        <div class="info-section form-group">
+          <h4>🎯 Enfoque Principal</h4>
+          <input type="text" id="input-enfoquenew" placeholder="Ej. Agilidad, Predictivo, etc.">
+        </div>
+
+        <div class="info-section form-group">
+          <h4>💼 Casos de Uso Recomendados</h4>
+          <input type="text" id="input-casosusonew" placeholder="¿Para qué proyectos se recomienda?">
+        </div>
+        
+        <div class="grid-split form-group">
+          <div class="info-section success-box">
+            <h4>✅ Ventajas</h4>
+            <textarea id="input-ventajasnew" placeholder="Enumera las ventajas principales..."></textarea>
+          </div>
+          <div class="info-section danger-box">
+            <h4>❌ Desventajas</h4>
+            <textarea id="input-desventajasnew" placeholder="Enumera los puntos débiles..."></textarea>
+          </div>
+        </div>
+        
+        <div class="elementos" style="width: 100%;">
+          <input id="filtroElements" type="text" placeholder="🔍 Buscar elemento" class="search-input" style="margin-bottom: 20px; width: 100%;">
+          
+          <div class="library-grid" id="contenedor-elementos">
+            {% for elemento in elementos %}
+              <!-- Añadimos un listener 'onclick' para que toda la tarjeta sea seleccionable -->
+              <div class="element-card" 
+                  onclick="toggleCardSelection(this)"
+                  data-id="{{ elemento.ID }}" 
+                  data-nombre="{{ elemento.nombreMetodo }}" 
+                  data-tags="{{ elemento.nombreElemento }}" 
+                  data-definicion="{{ elemento.Descripción }}">
+                
+                <!-- Contenedor del checkbox y la etiqueta -->
+                <div class="card-header-selection" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                  <span class="element-tag {{ elemento.nombreMetodo|lower|cut:' ' }}">{{ elemento.nombreMetodo }}</span>
+                  <!-- Checkbox para la selección -->
+                  <input type="checkbox" class="element-checkbox" value="{{ elemento.ID }}" onclick="event.stopPropagation(); toggleCardSelection(this.closest('.element-card'))">
+                </div>
+                
+                <h3>{{ elemento.nombreElemento }}</h3>
+                <p>{{ elemento.Descripción }}</p>
+              </div>
+            {% empty %}
+              <div class="no-data-msg" style="grid-column: span 2; text-align: center;">
+                <p>No se encontraron elementos registrados en la biblioteca actualmente.</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn" onclick="saveMethodHibrid()">Guardar Métodos</button>
+        </div>
+      </div>
+
+    </div> <!-- Cierre de modal-body -->
+
+
+  </div> <!-- Cierre de modal-container -->
+</div> <!-- Cierre de modal-overlay -->
